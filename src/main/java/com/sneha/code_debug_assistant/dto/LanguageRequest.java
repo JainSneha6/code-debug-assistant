@@ -7,7 +7,7 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class ErrorLogRequest {
+public class LanguageRequest {
     private String errorMessage;
     private String codeSnippet;
 }
