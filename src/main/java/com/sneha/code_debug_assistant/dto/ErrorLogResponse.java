@@ -15,4 +15,8 @@ public class ErrorLogResponse {
     private String codeSnippet;
     private String language;
     private LocalDateTime createdAt;
+    private String explanation;
+    private String fix;
+    private String correctedCode;
+    private Double confidence;
 }

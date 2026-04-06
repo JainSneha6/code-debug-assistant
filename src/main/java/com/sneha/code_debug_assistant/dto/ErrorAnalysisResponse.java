@@ -7,6 +7,10 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class LanguageResponse {
+public class ErrorAnalysisResponse {
     private String language;
+    private String explanation;
+    private String fix;
+    private String correctedCode;
+    private Double confidence;
 }

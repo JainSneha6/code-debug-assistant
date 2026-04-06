@@ -1,9 +1,9 @@
 package com.sneha.code_debug_assistant.service;
 
-import com.sneha.code_debug_assistant.ai.LanguageDetectionService;
+import com.sneha.code_debug_assistant.ai.ErrorAnalysisService;
+import com.sneha.code_debug_assistant.dto.ErrorAnalysisResponse;
 import com.sneha.code_debug_assistant.dto.ErrorLogRequest;
 import com.sneha.code_debug_assistant.dto.ErrorLogResponse;
-import com.sneha.code_debug_assistant.dto.LanguageResponse;
 import com.sneha.code_debug_assistant.entity.ErrorLog;
 import com.sneha.code_debug_assistant.repository.ErrorLogRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,14 +19,12 @@ public class ErrorLogService {
     private ErrorLogRepository repository;
 
     @Autowired
-    private LanguageDetectionService service;
+    private ErrorAnalysisService service;
 
     public ErrorLog create(ErrorLogRequest request){
-        LanguageResponse response = service.detectLanguage(request.getErrorMessage(), request.getCodeSnippet());
         ErrorLog errorLog = new ErrorLog();
         errorLog.setErrorMessage(request.getErrorMessage());
         errorLog.setCodeSnippet(request.getCodeSnippet());
-        errorLog.setLanguage(response.getLanguage());
         errorLog.setCreatedAt(LocalDateTime.now());
 
         return repository.save(errorLog);
@@ -38,6 +36,10 @@ public class ErrorLogService {
         response.setErrorMessage(errorLog.getErrorMessage());
         response.setCodeSnippet(errorLog.getCodeSnippet());
         response.setLanguage(errorLog.getLanguage());
+        response.setExplanation(errorLog.getExplanation());
+        response.setFix(errorLog.getFix());
+        response.setCorrectedCode(errorLog.getCorrectedCode());
+        response.setConfidence(errorLog.getConfidence());
         response.setCreatedAt(errorLog.getCreatedAt());
         return response;
     }
@@ -60,5 +62,21 @@ public class ErrorLogService {
         }
         repository.deleteById(id);
         return "Deleted";
+    }
+
+    public ErrorLogResponse analyze(ErrorLogRequest request) {
+        ErrorAnalysisResponse response = service.analyze(request.getErrorMessage(), request.getCodeSnippet());
+        ErrorLog errorLog = ErrorLog.builder()
+                .errorMessage(request.getErrorMessage())
+                .codeSnippet(request.getCodeSnippet())
+                .language(response.getLanguage())
+                .explanation(response.getExplanation())
+                .fix(response.getFix())
+                .correctedCode(response.getCorrectedCode())
+                .confidence(response.getConfidence())
+                .createdAt(LocalDateTime.now())
+                .build();
+
+        return mapToResponse(repository.save(errorLog));
     }
 }

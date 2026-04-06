@@ -36,4 +36,9 @@ public class ErrorLogController {
     public ResponseEntity<String> deleteById(@PathVariable Long id){
         return ResponseEntity.ok(service.deleteById(id));
     }
+
+    @PostMapping("/analyze")
+    public ResponseEntity<ErrorLogResponse> analyze(@RequestBody ErrorLogRequest request){
+        return ResponseEntity.ok(service.analyze(request));
+    }
 }
